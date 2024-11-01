@@ -47,7 +47,7 @@ SELECT		cs.width,cs.height,
 FROM		canvas_size cs
 JOIN		product_size ps ON ps.size_id=cs.size_id
 WHERE		ps.sale_price=(SELECT MAX(ps.sale_price) FROM product_size ps);
--- 6. Delete duplicate records from work, product_size, subject and image_link tables----------
+-- Q6 Delete duplicate records from work, product_size, subject and image_link tables----------
 WITH CTE AS ( #We need to use a CTE as a partition to have a table showing the repeated entries
     SELECT *,
            ROW_NUMBER() OVER (PARTITION BY work_id,size_id,sale_price,regular_price ORDER BY work_id) AS row_num #count rows and restart on work id and others
@@ -60,17 +60,16 @@ WHERE work_id IN (
     FROM CTE
     WHERE row_num > 1
 );
--- ---------7. Identify the museums with invalid city information in the given dataset----------------------------------------------------------------------
-SELECT *
-FROM museum
-WHERE city REGEXP '^[0-9]' OR city IS NULL;
+-- Q7. Identify the museums with invalid city information in the given dataset----------------------------------------------------------------------
+SELECT 		*
+FROM 		museum
+WHERE 		city REGEXP '^[0-9]' OR city IS NULL;
 
--- ------------Fetch the top 10 most famous painting subject
-select * 
-	from (
-		select s.subject,count(1) as no_of_paintings
-		,rank() over(order by count(1) desc) as ranking
-		from work w
-		join subject s on s.work_id=w.work_id
-		group by s.subject ) as ranktable
-	where ranking <= 10;
+-- Q8------------Fetch the top 10 most famous painting subject
+SELECT		* 
+FROM 		(SELECT 	s.subject,count(1) AS no_of_paintings
+						,RANK() OVER(ORDER BY count(1) desc) AS ranking
+			FROM work w
+			JOIN subject s ON s.work_id=w.work_id
+			GROUP BY s.subject ) AS rank_table
+WHERE ranking <= 10;
