@@ -159,7 +159,7 @@ FROM  		(SELECT		mh.museum_id,count(mh.day) as Opening_Days_Per_Week,
 SELECT		m.name, m.city,m.country,
 			x.no_of_painintgs
 FROM		(SELECT		m.museum_id, count(m.museum_id) AS no_of_painintgs
-						,rank() over(order by count(m.museum_id) desc) as rnk
+						,RANK() OVER(ORDER BY count(m.museum_id) desc) AS rnk
 			FROM 		work w
 			JOIN 		museum m ON m.museum_id=w.museum_id
 			GROUP BY	m.museum_id) x
