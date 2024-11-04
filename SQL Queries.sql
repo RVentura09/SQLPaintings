@@ -5,7 +5,7 @@ SELECT 		w.work_id,w.name,w.artist_id,
 			a.full_name
 FROM		work w
 JOIN		artist a ON	w.artist_id=a.artist_id
-WHERE		w.museum_id is null
+WHERE		w.museum_id IS NULL
 ORDER BY	artist_id,work_id;
 
 
@@ -21,7 +21,7 @@ WHERE       m.museum_id NOT IN
             (SELECT DISTINCT museum_id
              FROM work
              WHERE museum_id IS NOT NULL
-             order by museum_id);
+             ORDER BY museum_id);
 -- Alternative query to verify the number of paintings in museums------------------
 
 SELECT      m.museum_id,m.name,
@@ -37,10 +37,10 @@ ORDER BY    COUNT(w.museum_id),m.museum_id;
 
 -- --------------------------------------------------------------------------------
 # Q3. How many paintings have an asking price of more than their regular price?
-Select 		work_id,count(size_id) as 'Paintings asking_price>regular_price'
+SELECT 		work_id,count(size_id) AS 'Paintings asking_price>regular_price'
 FROM 		product_size
 WHERE		sale_price>regular_price
-group by	work_id;
+GROUP BY	work_id;
 
 
 
@@ -48,7 +48,7 @@ group by	work_id;
 
 -- --------------------------------------------------------------------------------
 # Q4. Identify the paintings whose asking price is less than 50% of its regular price
-Select 		ps.work_id,
+SELECT 		ps.work_id,
 			w.name
 FROM 		product_size ps
 JOIN		work w ON w.work_id=ps.work_id
@@ -66,7 +66,8 @@ SELECT		cs.width,cs.height,
 			ps.size_id
 FROM		canvas_size cs
 JOIN		product_size ps ON ps.size_id=cs.size_id
-WHERE		ps.sale_price=(SELECT MAX(ps.sale_price) FROM product_size ps);
+WHERE		ps.sale_price=(	SELECT	MAX(ps.sale_price)
+							FROM product_size ps);
 
 
 
@@ -77,7 +78,7 @@ WITH CTE AS ( #We need to use a CTE as a partition to have a table showing the r
     SELECT *,
            ROW_NUMBER() OVER (PARTITION BY work_id,size_id,sale_price,regular_price ORDER BY work_id) AS row_num #count rows and restart on work id and others
     FROM product_size
-    order by row_num # show the max number of repeated at the end of the list
+    ORDER BY row_num # show the max number of repeated at the end of the list
 )
 
 DELETE FROM product_size # Delete all the information where the work id is in the previous CTE table and its row)number  is higher than 1
@@ -149,3 +150,7 @@ FROM  		(SELECT		mh.museum_id,count(mh.day) as Opening_Days_Per_Week,
             GROUP BY	mh.museum_id,m.name
             HAVING		count(mh.day)=7 )as TotalCount ;
             
+            
+            
+            
+-- -----------------------------------------------------------------------------------------------------------------
